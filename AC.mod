@@ -152,8 +152,8 @@ var pot_max_ac{AC};
 
 var desconforto{AC,Ot,Of};			# Medida de desconforto térmico do usuário
 
-#var frequency_ac{AC,Ot,Of} >= 0;			# Potência de refrigeração do AC [kW]
-param frequency_ac{AC,Ot,Of} >= 0;			# Potência de refrigeração do AC [kW]
+var frequency_ac{AC,Ot,Of} >= 0;			# Potência de refrigeração do AC [kW]
+#param frequency_ac{AC,Ot,Of} >= 0;			# Potência de refrigeração do AC [kW]
 
 # Modificadores Pac
 
