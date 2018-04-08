@@ -180,7 +180,7 @@ param AC_Fase_c{AC};   				# Determina operação do AC na Fase C
 # BATERIA
 
 var pot_bateria{BAT,Ot,Of};  		# Potência ativa da bateria
-var carga_bateria{BAT,Ot,Of} >= 0; 		# Carga da bateria em determinado intervalo de tempo [kWh]
+var carga_bateria{BAT,Ot,Of} >= 0; 	# Carga da bateria em determinado intervalo de tempo [kWh]
 
 param potencia_nom_bat{BAT}; 		# Potência de carragamento e descarregamento NOMINAIS da bateria [kW]
 param eficiencia_bat{BAT};  		# Eficiência de carregamento e descarregamento NOMINAIS da bateria

@@ -15,6 +15,7 @@ data AC_Dados_Sistema.dat;
 
 # Calculo, fixação e avaliação dos dados para o calculo do ponto de operação
 data saida_ON_OFF.dat;
+
 data AC.dat;
 
 # Define o solver e as opções
