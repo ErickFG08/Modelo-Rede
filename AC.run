@@ -14,7 +14,7 @@ model AC.mod;
 data AC_Dados_Modelo_Rede.dat;
 
 # Calculo, fixação e avaliação dos dados para o calculo do ponto de operação
-data AC_Input.dat;
+#data AC_Input.dat;
 
 data AC.dat;
 
@@ -24,13 +24,15 @@ option display_1col 0;
 option display_round 4;
 option display_width 1000;
 option omit_zero_cols 1;
-option cplex_options "mipdisplay=5 mipinterval=1 mipgap=0.001 probe=3"; 
+option cplex_options "mipdisplay=5 mipinterval=10 mipgap=0.001 probe=3"; 
 
 # Resolve o modelo matemático do ponto de operação inicial
 
 solve fo_consumo_com_tarifa;
+#solve fo_desconforto;
 
 data AC_saidas.dat;
 
 printf "Arquivos Criados!!!\n";
 printf "Tempo de Execucao: %f minutos \n", _solve_elapsed_time/60;
+

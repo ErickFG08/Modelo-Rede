@@ -2,23 +2,26 @@
 
 set Ob;       					# Conjunto de nós
 set Ol within Ob cross Ob;  	# Conjunto de ramos
-set Ot;       					# Conjunto de tempo de planejamento
+set Ot;       					# Conjunto de intervalos de tempo
 set AC;       					# Conjuno de ACs
 set BAT;      					# Conjunto de baterias
 set PFV;      					# Conjunto de painéis fotovoltáicos
 set Of = 1 .. 3 by 1;   		# Conjunto de fases
-set Ozero;						# Conjunto com solução inicial do problema inteiro
 
 # Parâmetros do sistema
 
 param dT := 15/60;         		# Detal t = 15 min * 60 segundos (48 pontos)
+
 param Vmino;      				# Tensão mínima do sistema
 param Vmaxo;  					# Tensão máxima do sistema
-param th1 := 10 * 3.1416/180; 	# Ângulo de desvio máximo negativo
-param th2 := 5 * 3.1416/180; 	# Ângulo de desvio máximo positivo
+
+param th1 := 10 * 3.1416/180; 	# Ângulo de desvio máximo negativo (10º)
+param th2 := 5 * 3.1416/180; 	# Ângulo de desvio máximo positivo (10º)
+
 param tha := 0;    				# Ângulo da fase a
-param thb := -2.0944;   		# Ângulo da fase b
-param thc := 2.0944;   			# Ângulo da fase c
+param thb := -2.0944;   		# Ângulo da fase b (120º)
+param thc := 2.0944;   			# Ângulo da fase c (120º)
+
 param neper := 2.71828;
 
 # Parâmetros de carga
@@ -30,7 +33,11 @@ param preco_energia := 0.36448; # Preco da energia R$/kWh
 # Nós
 
 param Tipo{Ob};     			# Tipo de barra 1: carga, 0: SE
+
 param Nivel_b{Ob};  			# Nivel de tensão do nó
+param Nivel_l{Ol};				# Identifica se o ramo l é primário (Nivel_l = 1), secundário (Nivel_l = 2), ou trafo (Nivel_l = 999)
+
+param at{Ol};     				# Relação de transformação da linha
 
 param PDa{Ob};     				# Potência Ativa de Demanda no nó i na fase A p.u.
 param QDa{Ob};     				# Potência Reativa de Demanda no nó i na fase A p.u.
@@ -53,6 +60,7 @@ param Vice{Ob};     			# Estimação da tensão Fase C
 param alfa_a{Ob};   			# Coeficiente da carga ativa Fase A
 param alfa_b{Ob};   			# Coeficiente da carga ativa Fase B
 param alfa_c{Ob};   			# Coeficiente da carga ativa Fase C
+
 param beta_a{Ob};   			# Coeficiente da carga reativa Fase A
 param beta_b{Ob};   			# Coeficiente da carga reativa Fase B
 param beta_c{Ob};   			# Coeficiente da carga reativa Fase C
@@ -73,9 +81,6 @@ param Rbc{Ol};    				# Reatância no circuito na fase BC p.u.
 param Rac{Ol};    				# Reatância no circuito na fase AC p.u.
 
 param Imax{Ol};   				# Magnitude máxima de corrente permitido pelo ramo
-
-param Nivel_l{Ol};				# Identifica se o ramo l é primário (Nivel_l = 1), secundário (Nivel_l = 2), ou trafo (Nivel_l = 999)
-param at{Ol};     				# Relação de transformação da linha
 
 # Variáveis do estado
 
@@ -108,62 +113,60 @@ var ISic{Ob,Ot};   				# Corrente imaginaria gerada na subestação na fase C
 
 # Parâmetros do ambiente
 
-param Tout{Ot};       							# Temperatura externa
-param Irradiacao_sem_nuvem{Ot}; 				# Irradiacao solar [kW/m2]
+param Tout{Ot};							# Temperatura externa
+param Irradiacao_sem_nuvem{Ot};			# Irradiacao solar [kW/m2]
 
 # Parâmetros e variáveis térmicas das casas
 
-var Tin{AC,Ot,Of};    							# Temperatura interna da casa
-var Tparede{AC,Ot,Of};   						# Temperatura da parede
+var Tin{AC,Ot,Of};						# Temperatura interna da casa
+var Tparede{AC,Ot,Of};					# Temperatura da parede
 
-var Taux{AC,Ot,Of};
+var Taux{AC,Ot,Of};						# Variáveis auxiliares para cálculo do valor absoluto do "conforto térmico dos usuários"
 var Taux1{AC,Ot,Of} >= 0;
 var Taux2{AC,Ot,Of} >= 0;
 
-var Pac{AC,Ot,Of} >= 0;				# Potência do AC [kW]
-var Qac{AC,Ot,Of} >= 0;
-
-var u{AC,Ot,Of};    				# sinal setpoint
+var Pac{AC,Ot,Of} >= 0;					# Potência elétrica de entrada do AC [kW]
+var Qac{AC,Ot,Of} >= 0;					# Capacidade de refrigeração do AC [kW]
 
 # Programação inteira
 
-param solucao_inicial{Ozero};
-var on_off{AC,Ot,Of} binary;		# Variável que determina se o AC está ligado ou desligado
+var on_off{AC,Ot,Of} binary;			# Variável que determina se o AC está ligado ou desligado
+#param on_off{AC,Ot,Of} binary;
+
+var frequency_ac{AC,Ot,Of} >= 0;		# Potência de refrigeração do AC [kW]
+#param frequency_ac{AC,Ot,Of} >= 0;
 
 # Aparelhos de Ar Condicionado
 
-param Tset_casa{AC};				# Temperature Setpoint
+param Tset_casa{AC};		# Temperature Setpoint
 param Tmax{AC};
 param Tmin{AC};
 
 var var_a{AC};
 var var_b{AC};
 
-param Ra{AC};
-param Ca{AC};
-param Rm{AC};
-param Cm{AC};
+param Ra{AC};				# Resistência térmica da casa
+param Ca{AC};				# Capacidade térmica da casa
+param Rm{AC};				# Resistência térmica da parede
+param Cm{AC};				# Capacidade térmica da parede
 
-param Pnom_ac{AC};
-param COP_nom{AC};
+param Pnom_ac{AC};			# Potência nominal do aparelho de AC
+param COP_nom{AC};			# Coeficiente de performance nominal do aparelho de AC
 
-var pot_min_ac{AC};
-var pot_max_ac{AC};
+var pot_min_ac{AC};			# Potência mínima dos aparelhos de AC
+var pot_max_ac{AC};			# Potência máxima dos aparelhos de AC
 
-var desconforto{AC,Ot,Of};			# Medida de desconforto térmico do usuário
-
-var frequency_ac{AC,Ot,Of} >= 0;			# Potência de refrigeração do AC [kW]
-#param frequency_ac{AC,Ot,Of} >= 0;			# Potência de refrigeração do AC [kW]
+var desconforto{AC,Ot,Of};	# Medida de desconforto térmico do usuário
 
 # Modificadores Pac
 
-var mod_Pac_freq{AC,Ot,Of};
-var mod_Pac_Tout{Ot};
+var mod_Pac_freq{AC,Ot,Of};	# Modificador de performance dos aparelhos de AC (Pac(freq))
+var mod_Pac_Tout{Ot};		# Modificador de performance dos aparelhos de AC (Pac(Tout))	
 
 # Modificadores Qac
 
-var mod_Qac_freq{AC,Ot,Of};
-var mod_Qac_Tout{Ot};
+var mod_Qac_freq{AC,Ot,Of};	# Modificador de performance dos aparelhos de AC (Qac(freq))	
+var mod_Qac_Tout{Ot};		# Modificador de performance dos aparelhos de AC (Qac(Tout))
    
 var Iac_re_a{AC,Ot};   				# Corrente real do AC da fase A
 var Iac_re_b{AC,Ot};   				# Corrente real do AC da fase B
@@ -179,45 +182,47 @@ param AC_Fase_c{AC};   				# Determina operação do AC na Fase C
 
 # BATERIA
 
-var pot_bateria{BAT,Ot,Of};  		# Potência ativa da bateria
+var pot_bateria{BAT,Ot,Of};  		# Potência ativa da bateria (+/-)
 var carga_bateria{BAT,Ot,Of} >= 0; 	# Carga da bateria em determinado intervalo de tempo [kWh]
 
 param potencia_nom_bat{BAT}; 		# Potência de carragamento e descarregamento NOMINAIS da bateria [kW]
 param eficiencia_bat{BAT};  		# Eficiência de carregamento e descarregamento NOMINAIS da bateria
 param capacidade_bat{BAT};  		# Capacidade NOMINAL da bateria [kWh]
 
-param BAT_Fase_a{BAT};  			# Determina operação da BAT na Fase A
-param BAT_Fase_b{BAT};  			# Determina operação da BAT na Fase B
-param BAT_Fase_c{BAT};  			# Determina operação da BAT na Fase C
+param BAT_Fase_a{BAT};  			# Determina operação das BAT da Fase A
+param BAT_Fase_b{BAT};  			# Determina operação das BAT da Fase B
+param BAT_Fase_c{BAT};  			# Determina operação das BAT da Fase C
 			
-var Ibat_re_a{BAT,Ot};  			# Corrente real do BAT da Fase A
-var Ibat_re_b{BAT,Ot};  			# Corrente real do BAT da Fase B
-var Ibat_re_c{BAT,Ot};  			# Corrente real do BAT da Fase C
+var Ibat_re_a{BAT,Ot};  			# Corrente real das BAT da Fase A
+var Ibat_re_b{BAT,Ot};  			# Corrente real das BAT da Fase B
+var Ibat_re_c{BAT,Ot};  			# Corrente real das BAT da Fase C
 			
-var Ibat_im_a{BAT,Ot};  			# Corrente imag do BAT da Fase A
-var Ibat_im_b{BAT,Ot};  			# Corrente imag do BAT da Fase B
-var Ibat_im_c{BAT,Ot};  			# Corrente imag do BAT da Fase C   
+var Ibat_im_a{BAT,Ot};  			# Corrente imag das BAT da Fase A
+var Ibat_im_b{BAT,Ot};  			# Corrente imag das BAT da Fase B
+var Ibat_im_c{BAT,Ot};  			# Corrente imag das BAT da Fase C   
     
 # PAINEIS
 
 param potencia_nom_pfv{PFV};		# Potência nominal do painel [kW]
 param eficiencia_pfv{PFV};  		# Eficiência do painel
 param num_placas_pfv{PFV};  		# Número de placas solares
-param area_pfv{PFV};
+param area_pfv{PFV};				# Área dos painéis fotovoltaicos
 
 var pot_pfv{PFV,Ot,Of};
 
-param PFV_Fase_a{PFV};
-param PFV_Fase_b{PFV};
-param PFV_Fase_c{PFV};
+param PFV_Fase_a{PFV};  			# Determina operação dos PFV da Fase A
+param PFV_Fase_b{PFV};  			# Determina operação dos PFV da Fase B
+param PFV_Fase_c{PFV};  			# Determina operação dos PFV da Fase C
     
-var Ipfv_re_a{PFV,Ot}; 				# Corrente real do PFV da Fase A
-var Ipfv_re_b{PFV,Ot}; 				# Corrente real do PFV da Fase B
-var Ipfv_re_c{PFV,Ot}; 				# Corrente real do PFV da Fase C
+var Ipfv_re_a{PFV,Ot}; 				# Corrente real dos PFV da Fase A
+var Ipfv_re_b{PFV,Ot}; 				# Corrente real dos PFV da Fase B
+var Ipfv_re_c{PFV,Ot}; 				# Corrente real dos PFV da Fase C
 				
-var Ipfv_im_a{PFV,Ot}; 				# Corrente imag do PFV da Fase A
-var Ipfv_im_b{PFV,Ot}; 				# Corrente imag do PFV da Fase B
-var Ipfv_im_c{PFV,Ot}; 				# Corrente imag do PFV da Fase C         
+var Ipfv_im_a{PFV,Ot}; 				# Corrente imag dos PFV da Fase A
+var Ipfv_im_b{PFV,Ot}; 				# Corrente imag dos PFV da Fase B
+var Ipfv_im_c{PFV,Ot}; 				# Corrente imag dos PFV da Fase C   
+
+#####################################################      
     
 # Linearização dos Fluxos de Corrente
 
@@ -250,7 +255,7 @@ var Ircm{Ol,Ot}>=0;    				# Variáveis auxiliares para o cálculo da corrente n
 var Iicp{Ol,Ot}>=0;    				# Variáveis auxiliares para o cálculo da corrente nos ramos
 var Iicm{Ol,Ot}>=0;    				# Variáveis auxiliares para o cálculo da corrente nos ramos
 
-# Demanda
+# Variávies de Demanda
 
 var IDra{Ob,Ot};   					# Corrente real demandada na subestação na fase A inicial
 var IDia{Ob,Ot};   					# Corrente imaginaria demandada na subestação na fase A inicial
@@ -281,26 +286,8 @@ minimize fo_consumo_sem_tarifa:
 						(ISra[i,t] * Vra[i,t] + ISrb[i,t] * Vrb[i,t] + ISrc[i,t] * Vrc[i,t]));
 
 # Consumo de energia dos aparelhos de AC
-minimize fo_consumo_ac: (sum {w in AC, t in Ot, f in Of} dT * tarifa_branca[t] * preco_energia * Pac[w,t,f]);
-
-# Perdas
-minimize fo_perdas:
-						(sum {(j,i) in Ol, t in Ot} Ira[j,i,t] * Ira[j,i,t] * Raa[j,i] * dT * preco_energia) +
-						(sum {(j,i) in Ol, t in Ot} Irb[j,i,t] * Irb[j,i,t] * Rbb[j,i] * dT * preco_energia) +
-						(sum {(j,i) in Ol, t in Ot} Irc[j,i,t] * Irc[j,i,t] * Rcc[j,i] * dT * preco_energia) ;
-				   			   
-# Perdas
-minimize fo_perdas_com_tarifa:
-						(sum {(j,i) in Ol, t in Ot} Ira[j,i,t] * Ira[j,i,t] * Raa[j,i] * dT * tarifa_branca[t] * preco_energia) +
-						(sum {(j,i) in Ol, t in Ot} Irb[j,i,t] * Irb[j,i,t] * Rbb[j,i] * dT * tarifa_branca[t] * preco_energia) +
-						(sum {(j,i) in Ol, t in Ot} Irc[j,i,t] * Irc[j,i,t] * Rcc[j,i] * dT * tarifa_branca[t] * preco_energia) ;
-
-# Perdas AC						
-minimize fo_perdas_ac:
-						(sum {w in AC, (j,i) in Ol, t in Ot} Iac_re_a[w,t] * Iac_re_a[w,t] * Raa[4,401] * dT * tarifa_branca[t] * preco_energia) +
-						(sum {w in AC, (j,i) in Ol, t in Ot} Iac_re_b[w,t] * Iac_re_b[w,t] * Rbb[4,401] * dT * tarifa_branca[t] * preco_energia) +
-						(sum {w in AC, (j,i) in Ol, t in Ot} Iac_re_c[w,t] * Iac_re_c[w,t] * Rcc[4,401] * dT * tarifa_branca[t] * preco_energia) ;
- 	 
+minimize fo_consumo_ac: (sum {w in AC, t in Ot, f in Of} Pac[w,t,f] * dT * tarifa_branca[t] * preco_energia);
+ 
 #--------------------------------------------- Balanço de fluxos de correntes --------------------------------------
 # Balanço de corrente da fase A
  
