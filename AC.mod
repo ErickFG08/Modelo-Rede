@@ -273,17 +273,18 @@ minimize fo_desconforto:
 						(sum {w in AC, t in Ot : AC_Fase_a[w] == 1} (desconforto[w,t,1])) + 
                         (sum {w in AC, t in Ot : AC_Fase_b[w] == 1} (desconforto[w,t,2])) + 
                         (sum {w in AC, t in Ot : AC_Fase_c[w] == 1} (desconforto[w,t,3])) ;
-						
-				   
+
 # Consumo de energia COM tarifa branca
 minimize fo_consumo_com_tarifa:
-						(sum {i in Ob, t in Ot : Tipo[i] == 1} dT * tarifa_branca[t] * preco_energia *
-						(ISra[i,t] * Vra[i,t] + ISrb[i,t] * Vrb[i,t] + ISrc[i,t] * Vrc[i,t]));
+						(sum {i in Ob, t in Ot : Tipo[i] == 1} (dT * tarifa_branca[t] * preco_energia) *
+						((ISra[i,t] * Vra[i,t] + ISrb[i,t] * Vrb[i,t] + ISrc[i,t] * Vrc[i,t]) +
+						 (ISia[i,t] * Via[i,t] + ISib[i,t] * Vib[i,t] + ISic[i,t] * Vic[i,t]) ));
 
 # Consumo de energia SEM tarifa branca
 minimize fo_consumo_sem_tarifa:
 						(sum {i in Ob, t in Ot : Tipo[i] == 1} dT * preco_energia *
-						(ISra[i,t] * Vra[i,t] + ISrb[i,t] * Vrb[i,t] + ISrc[i,t] * Vrc[i,t]));
+						((ISra[i,t] * Vra[i,t] + ISrb[i,t] * Vrb[i,t] + ISrc[i,t] * Vrc[i,t]) +
+						 (ISia[i,t] * Via[i,t] + ISib[i,t] * Vib[i,t] + ISic[i,t] * Vic[i,t]) ));
 
 # Consumo de energia dos aparelhos de AC
 minimize fo_consumo_ac: (sum {w in AC, t in Ot, f in Of} Pac[w,t,f] * dT * tarifa_branca[t] * preco_energia);

@@ -3,9 +3,6 @@ printf "Desconforto Térmico dos Usuários: %4f.\n", fo_desconforto >> saidas\sa
 printf "Consumo de Energia (Sem Tarifa Branca): %4f.\n", fo_consumo_sem_tarifa >> saidas\saidas_funcoes_objetivo.txt;
 printf "Consumo de Energia (Com Tarifa Branca): %4f.\n", fo_consumo_com_tarifa >> saidas\saidas_funcoes_objetivo.txt;
 printf "Consumo de Energia dos ACs: %4f.\n", fo_consumo_ac >> saidas\saidas_funcoes_objetivo.txt;
-printf "Perdas Elétricas sem tarifa branca: %4f.\n", fo_perdas >> saidas\saidas_funcoes_objetivo.txt;
-printf "Perdas Elétricas com tarifa branca: %4f.\n", fo_perdas_com_tarifa >> saidas\saidas_funcoes_objetivo.txt;
-printf "Perdas Elétricas AC: %4f.\n", fo_perdas_ac >> saidas\saidas_funcoes_objetivo.txt;
 printf "----------------------------------------------------------------------------\n" >> saidas\saidas_funcoes_objetivo.txt;
 printf "----------------------------------------------------------------------------\n\n" >> saidas\saidas_funcoes_objetivo.txt;
 
@@ -13,7 +10,7 @@ printf "------------------------------------------------------------------------
 printf "Magnitudes de Tensao:" >> saidas\saida_Magnitudes_de_tensao.xls;
 printf "\n" >> saidas\saida_Magnitudes_de_tensao.xls;
 for {t in Ot}{
-	printf "Tempo %2d:\n", t >> saida_Magnitudes_de_tensao.xls;
+	printf "Tempo %2d:\n", t >> saidas\saida_Magnitudes_de_tensao.xls;
 	printf "No \tFase A \tFase B \tFase C\n" >> saidas\saida_Magnitudes_de_tensao.xls;
 	for {k in Ob}{
 		if (Nivel_b[k] == 1) then {
@@ -96,7 +93,6 @@ display Tparede>saidas\saida_Tparede.xls;
 display desconforto>saidas\saida_desconforto.xls;
 display Qac>saidas\saida_Qac.xls;
 display on_off>saidas\saida_ON_OFF.xls;
-display u>saidas\saida_u.xls;
 
 display mod_Pac_freq>saidas\saida_mod_Pac_freq.xls;
 display mod_Qac_freq>saidas\saida_mod_Qac_freq.xls;
