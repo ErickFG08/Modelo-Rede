@@ -23,7 +23,7 @@ option solver CPLEXamp;
 option display_1col 0;
 option display_round 4;
 option display_width 1000;
-option omit_zero_cols 0;
+option omit_zero_cols 1;
 option cplex_options "mipdisplay=5 mipinterval=10 mipgap=0.001 probe=3"; 
 
 # Resolve o modelo matemático do ponto de operação inicial
