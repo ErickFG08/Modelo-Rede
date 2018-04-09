@@ -439,26 +439,28 @@ param Tinicial = 1.5;
  
  
 ## Tin 2 ##
+
+param deltaT = 1.50001;
  
 	subject to Tin_2a {w in AC, t in Ot : t > 1 and AC_Fase_a[w] = 1}:
-	Tin[w,t,1] <= Tset_casa[w] + 1.5;
+	Tin[w,t,1] <= Tset_casa[w] + deltaT;
 	
 	subject to Tin_2b {w in AC, t in Ot : t > 1 and AC_Fase_b[w] = 1}:
-	Tin[w,t,2] <= Tset_casa[w] + 1.5;
+	Tin[w,t,2] <= Tset_casa[w] + deltaT;
 	
 	subject to Tin_2c {w in AC, t in Ot : t > 1 and AC_Fase_c[w] = 1}:
-	Tin[w,t,3] <= Tset_casa[w] + 1.5;
+	Tin[w,t,3] <= Tset_casa[w] + deltaT;
  
 ## Tin 3 ##
 		 
 	subject to Tin_3a {w in AC, t in Ot : t > 1 and AC_Fase_a[w] = 1}:
-	Tin[w,t,1] >= Tset_casa[w] - 1.5;
+	Tin[w,t,1] >= Tset_casa[w] - deltaT;
 	
 	subject to Tin_3b {w in AC, t in Ot : t > 1 and AC_Fase_b[w] = 1}:
-	Tin[w,t,2] >= Tset_casa[w] - 1.5;  
+	Tin[w,t,2] >= Tset_casa[w] - deltaT;  
 	
 	subject to Tin_3c {w in AC, t in Ot : t > 1 and AC_Fase_c[w] = 1}:
-	Tin[w,t,3] >= Tset_casa[w] - 1.5;
+	Tin[w,t,3] >= Tset_casa[w] - deltaT;
  
 ## Frequency Min ##
 
