@@ -270,9 +270,9 @@ var IDic{Ob,Ot};   					# Corrente imaginaria demandada na subestação na fase 
 
 # Desconforto linaer
 minimize fo_desconforto: 
-						(sum {w in AC, t in Ot : AC_Fase_a[w] == 1} (desconforto[w,t,1])) + 
-                        (sum {w in AC, t in Ot : AC_Fase_b[w] == 1} (desconforto[w,t,2])) + 
-                        (sum {w in AC, t in Ot : AC_Fase_c[w] == 1} (desconforto[w,t,3])) ;
+						(sum {w in AC, t in Ot : AC_Fase_a[w] == 1} (desconforto[w,t,1]))/card(AC)/card(Ot) + 
+                        (sum {w in AC, t in Ot : AC_Fase_b[w] == 1} (desconforto[w,t,2]))/card(AC)/card(Ot) + 
+                        (sum {w in AC, t in Ot : AC_Fase_c[w] == 1} (desconforto[w,t,3]))/card(AC)/card(Ot) ;
 
 # Consumo de energia COM tarifa branca
 minimize fo_consumo_com_tarifa:
