@@ -2,7 +2,10 @@ printf "Tempo de Execucao: %f minutos \n", _solve_elapsed_time/60 >> saidas\said
 printf "Consumo de Energia (Sem Tarifa Branca): %4f.\n", fo_consumo_sem_tarifa >> saidas\saidas_funcoes_objetivo.txt;
 printf "Consumo de Energia (Com Tarifa Branca): %4f.\n", fo_consumo_com_tarifa >> saidas\saidas_funcoes_objetivo.txt;
 printf "Consumo de Energia dos ACs: %4f.\n", fo_consumo_ac >> saidas\saidas_funcoes_objetivo.txt;
-printf "Desconforto Térmico dos Usuários: %4f.\n", fo_desconforto >> saidas\saidas_funcoes_objetivo.txt;
+printf "Desconforto Térmico dos Usuários: %4f.\n",  (sum{x in AC, t in Ot}abs(Tin[x,t,1] - Tset_casa[x] * AC_Fase_a[x])/card(Ot) +
+													 sum{x in AC, t in Ot}abs(Tin[x,t,2] - Tset_casa[x] * AC_Fase_b[x])/card(Ot) +
+													 sum{x in AC, t in Ot}abs(Tin[x,t,3] - Tset_casa[x] * AC_Fase_c[x])/card(Ot)
+													)/card(AC)  >> saidas\saidas_funcoes_objetivo.txt;
 printf "----------------------------------------------------------------------------\n" >> saidas\saidas_funcoes_objetivo.txt;
 printf "----------------------------------------------------------------------------\n\n" >> saidas\saidas_funcoes_objetivo.txt;
 

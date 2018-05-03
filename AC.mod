@@ -130,11 +130,11 @@ var Qac{AC,Ot,Of} >= 0;					# Capacidade de refrigeração do AC [kW]
 
 # Programação inteira
 
-var on_off{AC,Ot,Of} binary;			# Variável que determina se o AC está ligado ou desligado
-#param on_off{AC,Ot,Of} binary;
+#var on_off{AC,Ot,Of} binary;			# Variável que determina se o AC está ligado ou desligado
+param on_off{AC,Ot,Of} binary;
 
-var frequency_ac{AC,Ot,Of} >= 0;		# Potência de refrigeração do AC [kW]
-#param frequency_ac{AC,Ot,Of} >= 0;
+#var frequency_ac{AC,Ot,Of} >= 0;		# Potência de refrigeração do AC [kW]
+param frequency_ac{AC,Ot,Of} >= 0;
 
 # Aparelhos de Ar Condicionado
 
