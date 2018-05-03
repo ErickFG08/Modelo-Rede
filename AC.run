@@ -14,7 +14,7 @@ model AC.mod;
 data AC_Dados_Modelo_Rede.dat;
 
 # Calculo, fixação e avaliação dos dados para o calculo do ponto de operação
-data AC_Input.dat;
+#data AC_Input.dat;
 
 data AC.dat;
 
@@ -28,8 +28,8 @@ option cplex_options "mipdisplay=5 mipinterval=10 mipgap=0.001 probe=3";
 
 # Resolve o modelo matemático do ponto de operação inicial
 
-solve fo_consumo_com_tarifa;
-#solve fo_desconforto;
+#solve fo_consumo_com_tarifa;
+solve fo_desconforto;
 
 data AC_saidas.dat;
 

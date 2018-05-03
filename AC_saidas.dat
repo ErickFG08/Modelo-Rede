@@ -91,14 +91,18 @@ for {t in Ot}{
 # ACs
 display Pac>saidas\saida_Pac.xls;
 display frequency_ac>saidas\saida_frequency_ac.xls;
-display Tin>saidas\saida_Tin.xls;
 display Tparede>saidas\saida_Tparede.xls;
 display desconforto>saidas\saida_desconforto.xls;
 display Qac>saidas\saida_Qac.xls;
-display on_off>saidas\saida_ON_OFF.xls;
-
 display mod_Pac_freq>saidas\saida_mod_Pac_freq.xls;
 display mod_Qac_freq>saidas\saida_mod_Qac_freq.xls;
+
+option omit_zero_cols 0;
+
+display on_off>saidas\saida_ON_OFF.xls;
+display Tin>saidas\saida_Tin.xls;
+
+option omit_zero_cols 1;
 
 option display_width 20;
 
