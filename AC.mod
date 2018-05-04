@@ -128,13 +128,23 @@ var Taux2{AC,Ot,Of} >= 0;
 var Pac{AC,Ot,Of} >= 0;					# Potência elétrica de entrada do AC [kW]
 var Qac{AC,Ot,Of} >= 0;					# Capacidade de refrigeração do AC [kW]
 
-# Programação inteira
+###################################################
+####################   INPUT   ####################
 
-var on_off{AC,Ot,Of} binary;			# Variável que determina se o AC está ligado ou desligado
-#param on_off{AC,Ot,Of} binary;
+param on_off{AC,Ot,Of} binary;
+param frequency_ac{AC,Ot,Of} >= 0;
+data AC_Input.dat;
+param deltaT = 1.50001;
 
-var frequency_ac{AC,Ot,Of} >= 0;		# Potência de refrigeração do AC [kW]
-#param frequency_ac{AC,Ot,Of} >= 0;
+###################################################
+##################   CALCULA   ####################
+
+#var on_off{AC,Ot,Of} binary;			# Variável que determina se o AC está ligado ou desligado
+#var frequency_ac{AC,Ot,Of} >= 0;		# Potência de refrigeração do AC [kW]
+#param deltaT = 1.5;
+
+###################################################
+###################################################
 
 # Aparelhos de Ar Condicionado
 
@@ -268,7 +278,7 @@ var IDic{Ob,Ot};   					# Corrente imaginaria demandada na subestação na fase 
 
 # Funções objetivo
 
-# Desconforto linaer
+# Desconforto
 minimize fo_desconforto: 
 						(sum {w in AC, t in Ot : AC_Fase_a[w] == 1} (desconforto[w,t,1]))/card(AC)/card(Ot) + 
                         (sum {w in AC, t in Ot : AC_Fase_b[w] == 1} (desconforto[w,t,2]))/card(AC)/card(Ot) + 
@@ -288,7 +298,14 @@ minimize fo_consumo_sem_tarifa:
 
 # Consumo de energia dos aparelhos de AC
 minimize fo_consumo_ac: (sum {w in AC, t in Ot, f in Of} Pac[w,t,f] * dT * tarifa_branca[t] * preco_energia);
- 
+
+# Perdas nos condutores
+minimize perdas: sum {(j,i) in Ol, t in Ot}
+					((	(Ira[j,i,t])^2 * Raa[j,i] + (Irb[j,i,t])^2 * Rab[j,i] + (Irc[j,i,t])^2 * Rac[j,i]	) +
+					(	(Ira[j,i,t])^2 * Rab[j,i] + (Irb[j,i,t])^2 * Rbb[j,i] + (Irc[j,i,t])^2 * Rbc[j,i]	) +
+					(	(Ira[j,i,t])^2 * Rac[j,i] + (Irb[j,i,t])^2 * Rbc[j,i] + (Irc[j,i,t])^2 * Rcc[j,i]	))
+					 * dT * tarifa_branca[t] * preco_energia;
+
 #--------------------------------------------- Balanço de fluxos de correntes --------------------------------------
 # Balanço de corrente da fase A
  
@@ -397,7 +414,7 @@ subject to corrente_carga_imag_c {i in Ob, t in Ot}:
 
 ## Tin ##
 
-param Tinicial = 1.5000000000001;
+param Tinicial = 1.5;
 
 	subject to Tin_1_a {w in AC, t in Ot : t = 1 and AC_Fase_a[w] = 1}:
 	 Tin[w,t,1] = Tset_casa[w] + Tinicial;    
@@ -439,8 +456,6 @@ param Tinicial = 1.5000000000001;
  
  
 ## Tin 2 ##
-
-param deltaT = 1.50000000001;
  
 	subject to Tin_2a {w in AC, t in Ot : t > 1 and AC_Fase_a[w] = 1}:
 	Tin[w,t,1] <= Tset_casa[w] + deltaT;
@@ -609,7 +624,7 @@ param deltaT = 1.50000000001;
 	0 = -Vrce[w] * Iac_im_c[w,t] + Vice[w] * Iac_re_c[w,t];
 
 # Restrições de desconforto
- 
+
 	subject to conforto_1a{w in AC, t in Ot : AC_Fase_a[w] == 1}:
 	desconforto[w,t,1] = Taux1[w,t,1] + Taux2[w,t,1];
 	
@@ -626,7 +641,7 @@ param deltaT = 1.50000000001;
 	desconforto[w,t,2] = 0;
 	
 	subject to conforto_2c{w in AC, t in Ot : AC_Fase_c[w] = 0}:
-	desconforto[w,t,3] = 0;	
+	desconforto[w,t,3] = 0;
 	
 	subject to conforto_3{w in AC, t in Ot, f in Of}:
 	Tin[w,t,f] - Tset_casa[w] = Taux1[w,t,f] - Taux2[w,t,f]; 
