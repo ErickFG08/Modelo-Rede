@@ -397,7 +397,7 @@ subject to corrente_carga_imag_c {i in Ob, t in Ot}:
 
 ## Tin ##
 
-param Tinicial = 1.5;
+param Tinicial = 1.5000000000001;
 
 	subject to Tin_1_a {w in AC, t in Ot : t = 1 and AC_Fase_a[w] = 1}:
 	 Tin[w,t,1] = Tset_casa[w] + Tinicial;    
@@ -440,7 +440,7 @@ param Tinicial = 1.5;
  
 ## Tin 2 ##
 
-param deltaT = 1.50001;
+param deltaT = 1.50000000001;
  
 	subject to Tin_2a {w in AC, t in Ot : t > 1 and AC_Fase_a[w] = 1}:
 	Tin[w,t,1] <= Tset_casa[w] + deltaT;

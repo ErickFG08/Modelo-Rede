@@ -30,6 +30,7 @@ option cplex_options "mipdisplay=5 mipinterval=10 mipgap=0.001 probe=3";
 
 #solve fo_consumo_com_tarifa;
 solve fo_desconforto;
+#solve fo_consumo_ac;
 
 data AC_saidas.dat;
 
