@@ -21,7 +21,7 @@ option display_1col 0;
 option display_round 4;
 option display_width 1000;
 option omit_zero_cols 1;
-option cplex_options "mipdisplay=5"; 
+option cplex_options "mipdisplay=5 mipinterval=1"; 
 
 # Resolve o modelo matemático do ponto de operação inicial
 
