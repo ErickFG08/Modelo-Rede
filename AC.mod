@@ -128,23 +128,8 @@ var Taux2{AC,Ot,Of} >= 0;
 var Pac{AC,Ot,Of} >= 0;					# Potência elétrica de entrada do AC [kW]
 var Qac{AC,Ot,Of} >= 0;					# Capacidade de refrigeração do AC [kW]
 
-###################################################
-####################   INPUT   ####################
-
-#param on_off{AC,Ot,Of} binary;
-#param frequency_ac{AC,Ot,Of} >= 0;
-
-###################################################
-##################   CALCULA   ####################
-
-var on_off{AC,Ot,Of} binary;			# Variável que determina se o AC está ligado ou desligado
-var frequency_ac{AC,Ot,Of} >= 0;		# Potência de refrigeração do AC [kW]
-#data AC_Input.dat;
-#param deltaT = 1.6;
-param deltaT = 1.5;
-
-###################################################
-###################################################
+param on_off{AC,Ot,Of} binary;			# Variável que determina se o AC está ligado ou desligado
+var frequency_ac{AC,Ot,Of};
 
 # Aparelhos de Ar Condicionado
 
@@ -454,71 +439,21 @@ param Tinicial = 1.5;
 	subject to Tparede_1_c0 {w in AC, t in Ot : t = 1 and AC_Fase_c[w] = 0}:
 	 Tparede[w,t,3] = 0;
  
- 
-## Tin 2 ##
- 
-	subject to Tin_2a {w in AC, t in Ot : t > 1 and AC_Fase_a[w] = 1}:
-	Tin[w,t,1] <= Tset_casa[w] + deltaT;
-	
-	subject to Tin_2b {w in AC, t in Ot : t > 1 and AC_Fase_b[w] = 1}:
-	Tin[w,t,2] <= Tset_casa[w] + deltaT;
-	
-	subject to Tin_2c {w in AC, t in Ot : t > 1 and AC_Fase_c[w] = 1}:
-	Tin[w,t,3] <= Tset_casa[w] + deltaT;
- 
-## Tin 3 ##
-		 
-	subject to Tin_3a {w in AC, t in Ot : t > 1 and AC_Fase_a[w] = 1}:
-	Tin[w,t,1] >= Tset_casa[w] - deltaT;
-	
-	subject to Tin_3b {w in AC, t in Ot : t > 1 and AC_Fase_b[w] = 1}:
-	Tin[w,t,2] >= Tset_casa[w] - deltaT;  
-	
-	subject to Tin_3c {w in AC, t in Ot : t > 1 and AC_Fase_c[w] = 1}:
-	Tin[w,t,3] >= Tset_casa[w] - deltaT;
- 
-## Frequency Min ##
-
-	subject to frequency_ac_min_a{w in AC, t in Ot : AC_Fase_a[w] = 1}:
-		frequency_ac[w,t,1] >= 20 * on_off[w,t,1];
-#		frequency_ac[w,t,1] >= 20;
-
-	subject to frequency_ac_min_b{w in AC, t in Ot : AC_Fase_b[w] = 1}:
-		frequency_ac[w,t,2] >= 20 * on_off[w,t,2];
-#		frequency_ac[w,t,2] >= 20;
-
-	subject to frequency_ac_min_c{w in AC, t in Ot : AC_Fase_c[w] = 1}:
-		frequency_ac[w,t,3] >= 20 * on_off[w,t,3];
-#		frequency_ac[w,t,3] >= 20;
-
-	subject to frequency_ac_min_a0{w in AC, t in Ot : AC_Fase_a[w] = 0}:
-		frequency_ac[w,t,1] = 0;
-
-	subject to frequency_ac_min_b0{w in AC, t in Ot : AC_Fase_b[w] = 0}:
-		frequency_ac[w,t,2] = 0;
-		
-	subject to frequency_ac_min_c0{w in AC, t in Ot : AC_Fase_c[w] = 0}:
-		frequency_ac[w,t,3] = 0;
-
 ## Frequency Max ##
 	
 	subject to frequency_ac_max{w in AC, t in Ot, f in Of}:
-		frequency_ac[w,t,f] <= 90 * on_off[w,t,f];
-#		frequency_ac[w,t,f] <= 90;
+		frequency_ac[w,t,f] = 90 * on_off[w,t,f];
 	   
 ## Mod Pac Freq ##
  
 	subject to modificador_Pac_freq_a{w in AC, t in Ot : AC_Fase_a[w] = 1}:
 	 mod_Pac_freq[w,t,1] = (0.0136 * frequency_ac[w,t,1] - 0.0456 * on_off[w,t,1]);
-#	 mod_Pac_freq[w,t,1] = (0.0136 * frequency_ac[w,t,1] - 0.0456);
 	 
 	subject to modificador_Pac_freq_b{w in AC, t in Ot : AC_Fase_b[w] = 1}:
 	 mod_Pac_freq[w,t,2] = (0.0136 * frequency_ac[w,t,2] - 0.0456 * on_off[w,t,2]);
-#	 mod_Pac_freq[w,t,2] = (0.0136 * frequency_ac[w,t,2] - 0.0456);
 	 
 	subject to modificador_Pac_freq_c{w in AC, t in Ot : AC_Fase_c[w] = 1}:
 	 mod_Pac_freq[w,t,3] = (0.0136 * frequency_ac[w,t,3] - 0.0456 * on_off[w,t,3]);
-#	 mod_Pac_freq[w,t,3] = (0.0136 * frequency_ac[w,t,3] - 0.0456);
 
 ## Mod Pac Tout ##	 
 	 
@@ -529,15 +464,12 @@ param Tinicial = 1.5;
  
 	subject to modificador_Qac_freq_a{w in AC, t in Ot : AC_Fase_a[w] = 1}:
 	 mod_Qac_freq[w,t,1] = (0.0121 * frequency_ac[w,t,1] + 0.0199 * on_off[w,t,1]);
-#	 mod_Qac_freq[w,t,1] = (0.0121 * frequency_ac[w,t,1] + 0.0199);
 	 
 	subject to modificador_Qac_freq_b{w in AC, t in Ot : AC_Fase_b[w] = 1}:
 	 mod_Qac_freq[w,t,2] = (0.0121 * frequency_ac[w,t,2] + 0.0199 * on_off[w,t,2]);
-#	 mod_Qac_freq[w,t,2] = (0.0121 * frequency_ac[w,t,2] + 0.0199);
 	 
 	subject to modificador_Qac_freq_c{w in AC, t in Ot : AC_Fase_c[w] = 1}:
 	 mod_Qac_freq[w,t,3] = (0.0121 * frequency_ac[w,t,3] + 0.0199 * on_off[w,t,3]);
-#	 mod_Qac_freq[w,t,3] = (0.0121 * frequency_ac[w,t,3] + 0.0199);
 
 # Mod Qac Tout ##
 		 
