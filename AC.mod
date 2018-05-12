@@ -128,19 +128,8 @@ var Taux2{AC,Ot,Of} >= 0;
 var Pac{AC,Ot,Of} >= 0;					# Potência elétrica de entrada do AC [kW]
 var Qac{AC,Ot,Of} >= 0;					# Capacidade de refrigeração do AC [kW]
 
-###################################################
-####################   INPUT   ####################
-
-#param on_off{AC,Ot,Of} binary;
-#param frequency_ac{AC,Ot,Of} >= 0;
-
-###################################################
-##################   CALCULA   ####################
-
 var on_off{AC,Ot,Of} binary;			# Variável que determina se o AC está ligado ou desligado
 var frequency_ac{AC,Ot,Of} >= 0;		# Potência de refrigeração do AC [kW]
-#data AC_Input.dat;
-#param deltaT = 1.6;
 param deltaT = 1.5;
 
 ###################################################
