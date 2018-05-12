@@ -14,7 +14,7 @@ model AC.mod;
 data AC_Dados_Modelo_Rede.dat;
 
 # Input
-data AC_Input_ONOFF.dat;
+data AC_Input.dat;
 
 data AC.dat;
 
