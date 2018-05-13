@@ -13,9 +13,6 @@ model AC.mod;
 # Dados do sistema
 data AC_Dados_Modelo_Rede.dat;
 
-# Input
-data AC_Input.dat;
-
 data AC.dat;
 
 # Define o solver e as opções
