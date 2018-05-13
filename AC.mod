@@ -130,6 +130,7 @@ var Qac{AC,Ot,Of} >= 0;					# Capacidade de refrigeração do AC [kW]
 
 param on_off{AC,Ot,Of} binary;
 param frequency_ac{AC,Ot,Of};
+param pot_bateria{BAT,Ot,Of};  		# Potência ativa da bateria (+/-)
 
 # Aparelhos de Ar Condicionado
 
@@ -177,7 +178,6 @@ param AC_Fase_c{AC};   				# Determina operação do AC na Fase C
 
 # BATERIA
 
-var pot_bateria{BAT,Ot,Of};  		# Potência ativa da bateria (+/-)
 var carga_bateria{BAT,Ot,Of} >= 0; 	# Carga da bateria em determinado intervalo de tempo [kWh]
 
 param potencia_nom_bat{BAT}; 		# Potência de carragamento e descarregamento NOMINAIS da bateria [kW]
@@ -578,27 +578,9 @@ param Tinicial = 1.5;
 
 # BEGIN BATTERY
 
-	subject to restricao_bat_0_1{b in BAT, t in Ot, f in Of : t = 1}:
-	carga_bateria[b,t,f] = 0;
-	
-	subject to restricao_bat_0_2{b in BAT, t in Ot, f in Of : t = card(Ot)}:
-	carga_bateria[b,t,f] = carga_bateria[b,1,f]; 
-	
 	subject to restricao_bat_1{b in BAT, t in Ot, f in Of : t > 1}:
 	carga_bateria[b,t,f] = carga_bateria[b,t-1,f] + eficiencia_bat[b] * pot_bateria[b,t-1,f] * dT;
-	
-	subject to restricao_bat_2{b in BAT, t in Ot, f in Of}:
-	0 <= carga_bateria[b,t,f];
-	
-	subject to restricao_bat_3{b in BAT, t in Ot, f in Of}:
-	carga_bateria[b,t,f] <= capacidade_bat[b];
-	
-	subject to restricao_bat_4{b in BAT, t in Ot, f in Of}:
-	- potencia_nom_bat[b] <= pot_bateria[b,t,f];
-	
-	subject to restricao_bat_5{b in BAT, t in Ot, f in Of}:
-	pot_bateria[b,t,f] <= potencia_nom_bat[b];
-	
+		
 	subject to Ire_BAT_aprox_linear_a {b in BAT, t in Ot : BAT_Fase_a[b] == 1}:
 	pot_bateria[b,t,1] = Vrae[b] * Ibat_re_a[b,t] + Viae[b] * Ibat_im_a[b,t];
 	
@@ -608,7 +590,7 @@ param Tinicial = 1.5;
 	subject to Ire_BAT_aprox_linear_b {b in BAT, t in Ot : BAT_Fase_b[b] == 1}:
 	pot_bateria[b,t,2] = Vrbe[b] * Ibat_re_b[b,t] + Vibe[b] * Ibat_im_b[b,t];
 	
-	subject to Ire_BAT_aprox_linear_b0 {b in BAT, t in Ot : BAT_Fase_b[b] == 0}:
+	subject to Ire_BAT_alprox_linear_b0 {b in BAT, t in Ot : BAT_Fase_b[b] == 0}:
 	pot_bateria[b,t,2] = 0;
 	
 	subject to Ire_BAT_aprox_linear_c {b in BAT, t in Ot : BAT_Fase_c[b] == 1}:
