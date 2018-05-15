@@ -130,7 +130,7 @@ var Qac{AC,Ot,Of} >= 0;					# Capacidade de refrigeração do AC [kW]
 
 var on_off{AC,Ot,Of} binary;			# Variável que determina se o AC está ligado ou desligado
 var frequency_ac{AC,Ot,Of} >= 0;		# Potência de refrigeração do AC [kW]
-param deltaT = 1.5;
+param deltaT = 2;
 
 ###################################################
 ###################################################
@@ -293,6 +293,12 @@ minimize perdas: sum {(j,i) in Ol, t in Ot}
 					((	(Ira[j,i,t])^2 * Raa[j,i] + (Irb[j,i,t])^2 * Rab[j,i] + (Irc[j,i,t])^2 * Rac[j,i]	) +
 					(	(Ira[j,i,t])^2 * Rab[j,i] + (Irb[j,i,t])^2 * Rbb[j,i] + (Irc[j,i,t])^2 * Rbc[j,i]	) +
 					(	(Ira[j,i,t])^2 * Rac[j,i] + (Irb[j,i,t])^2 * Rbc[j,i] + (Irc[j,i,t])^2 * Rcc[j,i]	))
+					 * dT * tarifa_branca[t] * preco_energia;
+					 
+# Correntes na SE
+minimize fo_corrente_SE: sum {i in Ob, t in Ot : Tipo[i] == 1}
+					(ISra[i,t] * ISra[i,t] + ISrb[i,t] * ISrb[i,t] + ISrc[i,t] * ISrc[i,t] +
+					ISia[i,t] * ISia[i,t] + ISib[i,t] * ISib[i,t] + ISic[i,t] * ISic[i,t])
 					 * dT * tarifa_branca[t] * preco_energia;
 
 #--------------------------------------------- Balanço de fluxos de correntes --------------------------------------

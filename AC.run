@@ -25,10 +25,11 @@ option cplex_options "mipdisplay=5";
 
 # Resolve o modelo matemático do ponto de operação inicial
 
-solve fo_consumo_com_tarifa;
+#solve fo_consumo_com_tarifa;
 #solve fo_consumo_sem_tarifa;
 #solve fo_desconforto;
 #solve fo_consumo_ac;
+solve fo_corrente_SE;
 
 data AC_saidas.dat;
 
