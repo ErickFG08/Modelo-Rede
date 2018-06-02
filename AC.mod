@@ -271,9 +271,9 @@ minimize fo_desconforto:
 
 # Consumo de energia COM tarifa branca
 minimize fo_consumo_com_tarifa:
-						(sum {i in Ob, t in Ot : Tipo[i] == 1} (dT * tarifa_branca[t] * preco_energia) *
+						sum {i in Ob, t in Ot : Tipo[i] == 1} (dT * tarifa_branca[t] * preco_energia) *
 						((ISra[i,t] * Vra[i,t] + ISrb[i,t] * Vrb[i,t] + ISrc[i,t] * Vrc[i,t]) +
-						 (ISia[i,t] * Via[i,t] + ISib[i,t] * Vib[i,t] + ISic[i,t] * Vic[i,t]) ));
+						 (ISia[i,t] * Via[i,t] + ISib[i,t] * Vib[i,t] + ISic[i,t] * Vic[i,t]));
 
 # Consumo de energia SEM tarifa branca
 minimize fo_consumo_sem_tarifa:
@@ -399,7 +399,7 @@ subject to corrente_carga_imag_c {i in Ob, t in Ot}:
 
 ## Tin ##
 
-param Tinicial = 1.5;
+param Tinicial = 2.0;
 
 	subject to Tin_1_a {w in AC, t in Ot : t = 1 and AC_Fase_a[w] = 1}:
 	 Tin[w,t,1] = Tset_casa[w] + Tinicial;    
